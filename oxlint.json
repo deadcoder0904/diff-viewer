@@ -1,0 +1,14 @@
+{
+  "categories": {
+    "suspicious": "warn",
+    "correctness": "error",
+    "perf": "warn",
+    "style": "warn",
+    "restriction": "warn"
+  },
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "ignore": ["dist", "node_modules", "bun.lock"]
+}

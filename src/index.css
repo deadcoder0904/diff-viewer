@@ -1,0 +1,96 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+@import "tailwindcss";
+
+:root {
+  font-family:
+    "Inter",
+    system-ui,
+    -apple-system,
+    sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: #050506;
+  overflow-x: hidden;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 3s infinite;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+::selection {
+  background: rgba(94, 106, 210, 0.3);
+  color: #ededef;
+}
+
+*:focus-visible {
+  outline: 2px solid rgba(94, 106, 210, 0.8);
+  outline-offset: 2px;
+}
+
+.monaco-scrollable-element > .scrollbar > .slider {
+  border-radius: 12px !important;
+}
+
+.monaco-scrollable-element > .vertical {
+  border-radius: 12px !important;
+}
+
+.monaco-scrollable-element > .horizontal {
+  border-radius: 12px !important;
+}
+
+.monaco-editor .scrollbar {
+  border-radius: 12px !important;
+}
+
+.monaco-editor .slider {
+  border-radius: 12px !important;
+}
+
+.diff-editor {
+  border-radius: 16px !important;
+}
+
+.monaco-editor .monaco-scrollable-element {
+  border-radius: 12px !important;
+}
