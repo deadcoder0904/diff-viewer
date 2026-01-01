@@ -2,6 +2,8 @@
 
 A React + TypeScript + Vite application for viewing and comparing file differences.
 
+Demo: [diff-viewer-x.vercel.app](https://diff-viewer-x.vercel.app/)
+
 ## Linting and Formatting
 
 This project uses [OXLint](https://oxc.rs/docs/guide/usage/linter.html) for linting and [OXFMT](https://oxc.rs/docs/guide/usage/formatter) for formatting.
