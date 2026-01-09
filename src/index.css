@@ -66,31 +66,3 @@ body {
   outline: 2px solid rgba(94, 106, 210, 0.8);
   outline-offset: 2px;
 }
-
-.monaco-scrollable-element > .scrollbar > .slider {
-  border-radius: 12px !important;
-}
-
-.monaco-scrollable-element > .vertical {
-  border-radius: 12px !important;
-}
-
-.monaco-scrollable-element > .horizontal {
-  border-radius: 12px !important;
-}
-
-.monaco-editor .scrollbar {
-  border-radius: 12px !important;
-}
-
-.monaco-editor .slider {
-  border-radius: 12px !important;
-}
-
-.diff-editor {
-  border-radius: 16px !important;
-}
-
-.monaco-editor .monaco-scrollable-element {
-  border-radius: 12px !important;
-}

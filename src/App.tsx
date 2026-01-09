@@ -1,5 +1,6 @@
-import { useState, useRef, useEffect, useCallback, useMemo } from "react";
-import { DiffEditor } from "@monaco-editor/react";
+import { useState, useRef, useCallback, useMemo, useEffect } from "react";
+import { parseDiffFromFile } from "@pierre/diffs";
+import { FileDiff } from "@pierre/diffs/react";
 import { FileText, ArrowRightLeft, Upload, Sparkles } from "lucide-react";
 import { useKeyboardNavigation } from "./hooks/useKeyboardNavigation";
 import { handleFileSelect, triggerFileInput } from "./utils/fileUtils";
@@ -70,7 +71,6 @@ function App() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const originalTextareaRef = useRef<HTMLTextAreaElement>(null);
   const changedTextareaRef = useRef<HTMLTextAreaElement>(null);
-  const diffEditorRef = useRef<import("monaco-editor").editor.IStandaloneDiffEditor | null>(null);
   const findDiffButtonRef = useRef<HTMLButtonElement>(null);
 
   const canDiff = originalText.length > 0 && changedText.length > 0;
@@ -82,12 +82,6 @@ function App() {
     changedTextareaRef,
     findDiffButtonRef,
   });
-
-  useEffect(() => {
-    if (viewMode === "diff") {
-      diffEditorRef.current?.layout();
-    }
-  }, [viewMode]);
 
   const onFileLoaded = useCallback((content: string, target: "original" | "changed") => {
     if (target === "original") {
@@ -128,6 +122,35 @@ function App() {
   const diffStats = useMemo(
     () => calculateDiffStats(originalText, changedText),
     [originalText, changedText],
+  );
+
+  const fileDiff = useMemo(() => {
+    if (!originalText || !changedText) return null;
+
+    return parseDiffFromFile(
+      {
+        name: "original.txt",
+        contents: originalText,
+        lang: "text",
+      },
+      {
+        name: "changed.txt",
+        contents: changedText,
+        lang: "text",
+      },
+    );
+  }, [originalText, changedText]);
+
+  const diffOptions = useMemo(
+    () => ({
+      theme: "pierre-dark",
+      themeType: "dark",
+      diffStyle: "split",
+      overflow: "scroll",
+      lineDiffType: "word",
+      disableFileHeader: true,
+    }),
+    [],
   );
 
   return (
@@ -253,89 +276,15 @@ function App() {
                 </span>
               </div>
             </div>
-            <div className="flex-1 min-h-0 overflow-hidden" style={{ borderRadius: "16px" }}>
-              <DiffEditor
-                original={originalText}
-                modified={changedText}
-                language="javascript"
-                theme="bun-dark"
-                beforeMount={(monaco) => {
-                  monaco.editor.defineTheme("bun-dark", {
-                    base: "vs-dark",
-                    inherit: true,
-                    rules: [
-                      { token: "comment", foreground: "8A8F98" },
-                      { token: "keyword", foreground: "8B5CF6" },
-                      { token: "delimiter", foreground: "EDEDEF" },
-                      { token: "number", foreground: "5E6AD2" },
-                      { token: "string", foreground: "F5D77B" },
-                      { token: "type.identifier", foreground: "7DD3FC" },
-                      { token: "identifier", foreground: "EDEDEF" },
-                      { token: "operator", foreground: "5E6AD2" },
-                    ],
-                    colors: {
-                      "editor.background": "#0A0A0C",
-                      "editor.foreground": "#EDEDEF",
-                      "editorLineNumber.foreground": "#4B4F57",
-                      "editorLineNumber.activeForeground": "#A7AEB8",
-                      "editor.selectionBackground": "#5E6AD24D",
-                      "editor.inactiveSelectionBackground": "#5E6AD233",
-                      "editorCursor.foreground": "#EDEDEF",
-                      "editorWhitespace.foreground": "#2F3238",
-                      "editorIndentGuide.background": "#2A2D33",
-                      "editorIndentGuide.activeBackground": "#3C4048",
-                      "editor.lineHighlightBackground": "#111118",
-                      "editor.lineHighlightBorder": "#1D1F26",
-                      "editor.selectionHighlightBackground": "#5E6AD226",
-                      "editorBracketMatch.background": "#1A1C24",
-                      "editorBracketMatch.border": "#5E6AD280",
-                      "editorWidget.background": "#0B0B10",
-                      "editorWidget.border": "#1C1F26",
-                      "editorHoverWidget.background": "#0B0B10",
-                      "editorHoverWidget.border": "#1C1F26",
-                      "diffEditor.insertedTextBackground": "#5E6AD244",
-                      "diffEditor.removedTextBackground": "#8B5CF644",
-                      "diffEditor.insertedLineBackground": "#5E6AD222",
-                      "diffEditor.removedLineBackground": "#8B5CF622",
-                      "diffEditor.border": "#1C1F26",
-                    },
-                  });
-                }}
-                originalModelPath="inmemory://diff/original.js"
-                modifiedModelPath="inmemory://diff/modified.js"
-                keepCurrentOriginalModel
-                keepCurrentModifiedModel
-                onMount={(editor) => {
-                  diffEditorRef.current = editor;
-                }}
-                height="100%"
-                options={{
-                  automaticLayout: true,
-                  renderSideBySide: true,
-                  scrollBeyondLastLine: false,
-                  readOnly: true,
-                  minimap: { enabled: false },
-                  lineNumbers: "on",
-                  renderLineHighlight: "all",
-                  wordWrap: "on",
-                  fontSize: 14,
-                  fontFamily: '"JetBrains Mono", "Fira Code", monospace',
-                  padding: { top: 16, bottom: 16 },
-                  scrollbar: {
-                    vertical: "visible",
-                    horizontal: "visible",
-                    verticalScrollbarSize: 12,
-                    horizontalScrollbarSize: 12,
-                    useShadows: false,
-                    handleMouseWheel: true,
-                  },
-                  overviewRulerLanes: 0,
-                  hideCursorInOverviewRuler: true,
-                  overviewRulerBorder: false,
-                  contextmenu: false,
-                }}
-                className="h-full"
-              />
+            <div className="flex-1 min-h-0 overflow-auto" style={{ borderRadius: "16px" }}>
+              {fileDiff ? (
+                <FileDiff
+                  fileDiff={fileDiff}
+                  options={diffOptions}
+                  className="h-full w-full"
+                  style={{ height: "100%" }}
+                />
+              ) : null}
             </div>
           </div>
         </div>
